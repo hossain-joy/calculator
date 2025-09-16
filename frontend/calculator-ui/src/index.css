@@ -1,0 +1,258 @@
+/* src/index.css */
+:root {
+  /* Core Palette & Style */
+  --bg-gradient: linear-gradient(135deg, #87CEEB, #E6E6FA, #90EE90, #FFB6C1); /* Sky Blue to Baby Pink */
+  --glass-bg: rgba(255, 255, 255, 0.3); /* Lighter glass for a clean look */
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-color: #333; /* Dark text for readability */
+  --secondary-text: #555;
+  --border-radius: 24px;
+  --blur: 10px; /* Softer blur */
+
+  /* Interactive/Accent Colors */
+  --button-bg: rgba(255, 255, 255, 0.25);
+  --button-hover: rgba(255, 255, 255, 0.5);
+  --operator-bg: #ff69b4; /* Vibrant Pink */
+  --equals-bg: #4682B4; /* Steel Blue */
+
+  /* Animation & Transition Timing */
+  --transition-fast: all 0.2s ease-out;
+  --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- Body & Dynamic Background --- */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--bg-gradient);
+  background-size: 400% 400%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-color);
+  overflow: hidden;
+  position: relative;
+  animation: bgMove 10s linear infinite;
+}
+
+@keyframes bgMove {
+  0%, 100% { background-position: 0% 50%; }    /* Start at Left-Center */
+  25%      { background-position: 50% 0%; }    /* Move to Top-Center */
+  50%      { background-position: 100% 50%; }  /* Move to Right-Center */
+  75%      { background-position: 50% 100%; }  /* Move to Bottom-Center */
+}
+
+/* --- Main Layout --- */
+.app-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  perspective: 2000px;
+}
+
+/* --- 3D Floating Glassmorphic Cards --- */
+.calculator, .history {
+  border-radius: var(--border-radius);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--glass-border);
+  /* Softer shadow suitable for a light background */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  transition: var(--transition-smooth);
+  animation: fadeInUp3D 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  opacity: 0;
+  transform-style: preserve-3d;
+  position: relative;
+}
+.calculator { animation-delay: 0.2s; }
+.history { animation-delay: 0.5s; }
+
+@keyframes fadeInUp3D {
+  from { transform: translateY(60px) rotateX(-20deg); opacity: 0; }
+  to { transform: translateY(0) rotateX(0deg); opacity: 1; }
+}
+
+/* Interactive 3D tilt on hover */
+.calculator:hover, .history:hover {
+  transform: translateY(-10px) rotateX(8deg) rotateY(5deg) scale(1.04);
+  box-shadow: 0 20px 40px rgba(31, 38, 135, 0.3);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Calculator & Display --- */
+.calculator {
+  width: 48%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.display {
+  color: var(--text-color);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 300;
+  padding: 5% 6%;
+  text-align: right;
+  border-bottom: 1px solid var(--glass-border);
+  min-height: 80px;
+  word-wrap: break-word;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Softer inner shadow */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Keypad & Dynamic Buttons --- */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2%;
+  padding: 3%;
+}
+
+.keypad button {
+  padding: clamp(18px, 2.2vw, 25px);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: var(--button-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transform: translateZ(25px);
+}
+
+/* Shiny ripple effect on hover */
+.keypad button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+}
+.keypad button:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.keypad button:active::before {
+  transition-duration: 0.2s;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.5;
+}
+
+.keypad button:hover {
+  background: var(--button-hover);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-4px) scale(1.05) translateZ(25px);
+}
+
+/* Press-down effect */
+.keypad button:active {
+  transform: translateY(1px) scale(0.95) translateZ(10px);
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.15);
+}
+
+.keypad button.operator,
+.keypad button.equals {
+  color: #fff;
+  font-weight: 700;
+}
+
+.keypad button.operator {
+  background: var(--operator-bg);
+}
+.keypad button.operator:hover { background: #ff85c1; }
+
+.keypad button.equals {
+  grid-column: span 2;
+  background: var(--equals-bg);
+}
+.keypad button.equals:hover { background: #5a9bd3; }
+
+/* --- Animated History Panel --- */
+.history {
+  width: 48%;
+  min-width: 280px;
+  padding: 2.5%;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.history h2 {
+  margin: 0 0 15px;
+  font-size: clamp(1.3rem, 2vw, 1.5rem);
+  border-bottom: 2px solid var(--equals-bg);
+  padding-bottom: 10px;
+}
+
+.history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Animate new items sliding in */
+.history li {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  transition: var(--transition-fast);
+  opacity: 0;
+  animation: newItemSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  position: relative;
+}
+@keyframes newItemSlideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+/* Staggering would be done with JS, this is a visual demo */
+.history li:nth-child(2) { animation-delay: 0.1s; }
+.history li:nth-child(3) { animation-delay: 0.2s; }
+/* etc... */
+
+.history li:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+/* --- Custom Scrollbar --- */
+.history ul::-webkit-scrollbar { width: 8px; }
+.history ul::-webkit-scrollbar-track { background: transparent; }
+.history ul::-webkit-scrollbar-thumb {
+  background: var(--equals-bg);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.history ul::-webkit-scrollbar-thumb:hover { background: #5a9bd3; }
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+  .app-container { flex-wrap: wrap; justify-content: center; }
+  .calculator, .history { width: 100%; max-width: 450px; }
+  .calculator:hover, .history:hover { transform: translateY(-5px) scale(1.02); }
+}
+@media (max-width: 768px) {
+  :root { --blur: 8px; }
+  .app-container { flex-direction: column; gap: 25px; align-items: center; }
+  .calculator:hover, .history:hover { transform: none; }
+  .keypad button:hover { transform: none; }
+}
